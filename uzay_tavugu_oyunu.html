@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Uzay Tavuğu</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+    }
+    canvas {
+      display: block;
+      background: url('https://i.imgur.com/6w8iDfZ.jpg') no-repeat center center;
+      background-size: cover;
+    }
+  </style>
+</head>
+<body>
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+<script>
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+
+  const chicken = {
+    x: 400,
+    y: 300,
+    size: 50,
+    img: new Image(),
+  };
+  chicken.img.src = 'https://i.imgur.com/yrD5t1t.png';
+
+  const star = {
+    x: Math.random() * 750,
+    y: Math.random() * 550,
+    size: 30,
+    img: new Image(),
+  };
+  star.img.src = 'https://i.imgur.com/YvP1oao.png';
+
+  let score = 0;
+
+  const keys = {};
+  document.addEventListener('keydown', (e) => keys[e.key] = true);
+  document.addEventListener('keyup', (e) => keys[e.key] = false);
+
+  function update() {
+    if (keys['ArrowUp']) chicken.y -= 5;
+    if (keys['ArrowDown']) chicken.y += 5;
+    if (keys['ArrowLeft']) chicken.x -= 5;
+    if (keys['ArrowRight']) chicken.x += 5;
+
+    // Çarpışma kontrolü
+    const dx = chicken.x - star.x;
+    const dy = chicken.y - star.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    if (distance < chicken.size / 2 + star.size / 2) {
+      score++;
+      star.x = Math.random() * 750;
+      star.y = Math.random() * 550;
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(chicken.img, chicken.x, chicken.y, chicken.size, chicken.size);
+    ctx.drawImage(star.img, star.x, star.y, star.size, star.size);
+
+    ctx.fillStyle = 'white';
+    ctx.font = '24px Arial';
+    ctx.fillText('Yıldızlar: ' + score, 10, 30);
+  }
+
+  function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+  }
+
+  gameLoop();
+</script>
+</body>
+</html>
